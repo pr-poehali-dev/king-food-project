@@ -13,12 +13,14 @@ const NAV = [
 ];
 
 const MENU = [
-  { name: 'King Бургер', desc: 'Сочная мраморная говядина, золотистая булочка бриошь, фирменный соус', price: '490 ₽', tag: 'Хит' },
-  { name: 'Двойной Royale', desc: 'Две котлеты, чеддер, бекон, карамелизированный лук', price: '650 ₽', tag: '' },
-  { name: 'Цезарь с курицей', desc: 'Хрустящий салат, томаты черри, пармезан, соус Цезарь', price: '420 ₽', tag: '' },
-  { name: 'Картофель по-королевски', desc: 'Хрустящие дольки с трюфельным маслом и розмарином', price: '290 ₽', tag: '' },
-  { name: 'Крылья BBQ', desc: 'Куриные крылья в дымном соусе барбекю, медовая глазурь', price: '460 ₽', tag: 'Новинка' },
-  { name: 'Молочный шейк', desc: 'Натуральное мороженое, ваниль Бурбон, карамель', price: '320 ₽', tag: '' },
+  { name: 'Шаурма King', desc: 'Сочное куриное мясо на гриле, свежие овощи, фирменный соус в тонком лаваше', price: '290 ₽', tag: 'Хит' },
+  { name: 'Шаверма по-королевски', desc: 'Нежная курица, маринованные овощи, чесночный и острый соус', price: '310 ₽', tag: '' },
+  { name: 'Сувлаки', desc: 'Греческие шашлычки на гриле с питой, соусом дзадзики и овощами', price: '350 ₽', tag: '' },
+  { name: 'King Бургер', desc: 'Сочная котлета на углях, чеддер, свежие овощи, золотистая булочка', price: '360 ₽', tag: '' },
+  { name: 'Гирос', desc: 'Хрустящая пита, обжаренное мясо, картофель фри и соус внутри', price: '330 ₽', tag: 'Новинка' },
+  { name: 'Хот-дог', desc: 'Сочная сосиска, мягкая булочка, горчица и фирменные соусы', price: '180 ₽', tag: '' },
+  { name: 'Наггетсы', desc: 'Хрустящие куриные наггетсы в золотистой панировке, 6 шт.', price: '220 ₽', tag: '' },
+  { name: 'Картофель фри', desc: 'Хрустящий золотистый картофель с щепоткой морской соли', price: '150 ₽', tag: '' },
 ];
 
 const FEATURES = [
@@ -47,9 +49,9 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* NAVBAR */}
-      <header className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${scrolled ? 'bg-background/90 backdrop-blur-md border-b border-gold/20 py-3' : 'py-6'}`}>
+      <header className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${scrolled || menuOpen ? 'bg-background/90 backdrop-blur-md border-b border-gold/20 py-3' : 'py-6'}`}>
         <div className="container flex items-center justify-between">
-          <button onClick={() => scrollTo('home')} className="flex items-center gap-2 group">
+          <button onClick={() => scrollTo('home')} className="flex items-center gap-2 group relative z-[60]">
             <Icon name="Crown" className="text-gold transition-transform group-hover:scale-110" size={28} />
             <span className="font-display text-2xl tracking-wide">King <span className="text-gold">Food</span></span>
           </button>
@@ -65,20 +67,40 @@ const Index = () => {
               </button>
             ))}
           </nav>
-          <button className="md:hidden text-gold" onClick={() => setMenuOpen(!menuOpen)}>
-            <Icon name={menuOpen ? 'X' : 'Menu'} size={26} />
+          <button className="md:hidden text-gold relative z-[60]" onClick={() => setMenuOpen(!menuOpen)} aria-label="Меню">
+            <Icon name={menuOpen ? 'X' : 'Menu'} size={28} />
           </button>
         </div>
-        {menuOpen && (
-          <nav className="md:hidden container mt-4 flex flex-col gap-4 pb-4 anim-fade-in">
-            {NAV.map((n) => (
-              <button key={n.id} onClick={() => scrollTo(n.id)} className="text-left text-foreground/80 hover:text-gold">
-                {n.label}
-              </button>
-            ))}
-          </nav>
-        )}
       </header>
+
+      {/* MOBILE FULLSCREEN MENU */}
+      <div
+        className={`md:hidden fixed inset-0 z-[55] bg-background/98 backdrop-blur-xl transition-all duration-500 ${menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+      >
+        <div className="absolute inset-0 grain opacity-60" />
+        <div className="relative h-full flex flex-col items-center justify-center gap-2 px-8">
+          <Icon name="Crown" className="text-gold/30 mb-6" size={48} />
+          {NAV.map((n, i) => (
+            <button
+              key={n.id}
+              onClick={() => scrollTo(n.id)}
+              className="group flex items-center gap-4"
+              style={{ animation: menuOpen ? `fadeUp 0.5s ease ${0.1 + i * 0.08}s both` : 'none' }}
+            >
+              <span className="font-display text-xs text-gold/40 w-6 text-right">0{i + 1}</span>
+              <span className={`font-display text-4xl tracking-wide transition-colors ${active === n.id ? 'text-gold' : 'text-foreground/85 group-hover:text-gold'}`}>
+                {n.label}
+              </span>
+            </button>
+          ))}
+          <div className="w-16 h-px gold-line my-8" />
+          <a href="tel:+79186689927" className="flex items-center gap-2 text-gold text-lg">
+            <Icon name="Phone" size={18} />
+            +7 (918) 668-99-27
+          </a>
+          <p className="text-foreground/40 text-sm mt-2">Дагомыс · Сочи · ежедневно 10:00–22:00</p>
+        </div>
+      </div>
 
       {/* HERO */}
       <section id="home" className="relative min-h-screen flex items-center grain">
@@ -87,11 +109,17 @@ const Index = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/40" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/60" />
         </div>
+        <div className="absolute top-28 right-10 hidden lg:block anim-fade-in" style={{ animationDelay: '1.2s' }}>
+          <Icon name="Crown" className="text-gold/10" size={120} />
+        </div>
         <div className="container relative z-10 py-32">
           <div className="max-w-2xl">
-            <p className="anim-fade-up text-gold tracking-[0.4em] text-xs md:text-sm uppercase mb-6" style={{ animationDelay: '0.1s' }}>
-              Дагомыс · Сочи
-            </p>
+            <div className="anim-fade-up flex items-center gap-3 mb-6" style={{ animationDelay: '0.1s' }}>
+              <span className="w-10 h-px gold-line" />
+              <p className="text-gold tracking-[0.4em] text-xs md:text-sm uppercase">
+                Дагомыс · Сочи
+              </p>
+            </div>
             <h1 className="anim-fade-up font-display text-6xl md:text-8xl leading-[0.95] mb-8" style={{ animationDelay: '0.25s' }}>
               Вкус, достойный<br /><span className="gold-gradient italic">короля</span>
             </h1>
@@ -153,6 +181,44 @@ const Index = () => {
               </div>
             ))}
           </div>
+
+          {/* DRINKS STRIP */}
+          <div className="max-w-4xl mx-auto mt-16 flex flex-wrap items-center justify-center gap-4">
+            {[
+              { icon: 'Coffee', label: 'Кофе с собой', price: 'от 120 ₽' },
+              { icon: 'CupSoda', label: 'Чай с собой', price: 'от 90 ₽' },
+              { icon: 'GlassWater', label: 'Лимонады', price: 'от 150 ₽' },
+              { icon: 'IceCream', label: 'Молочные коктейли', price: 'от 200 ₽' },
+            ].map((d) => (
+              <div key={d.label} className="flex items-center gap-3 px-5 py-3 rounded-full border border-gold/20 bg-card/40 hover:border-gold/50 transition-colors">
+                <Icon name={d.icon} className="text-gold" size={20} />
+                <span className="text-sm text-foreground/80">{d.label}</span>
+                <span className="text-sm text-gold font-medium">{d.price}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* DELIVERY BANNER */}
+      <section className="relative py-20 overflow-hidden border-y border-gold/15">
+        <div className="absolute inset-0 bg-gradient-to-r from-gold/10 via-transparent to-gold/10" />
+        <div className="container relative grid md:grid-cols-3 gap-10 items-center">
+          {[
+            { icon: 'Bike', title: 'Быстрая доставка', text: 'Привезём горячее блюдо прямо к вашей двери в Дагомысе' },
+            { icon: 'ShoppingBag', title: 'Заказ навынос', text: 'Соберём заказ к вашему приходу — без ожидания' },
+            { icon: 'UtensilsCrossed', title: 'Бизнес-ланч', text: 'Сытные комбо по специальной цене в будни' },
+          ].map((d) => (
+            <div key={d.title} className="flex items-center gap-5">
+              <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center">
+                <Icon name={d.icon} className="text-gold" size={24} />
+              </div>
+              <div>
+                <h3 className="font-display text-xl mb-1">{d.title}</h3>
+                <p className="text-sm text-foreground/55 leading-snug">{d.text}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -199,7 +265,7 @@ const Index = () => {
             {[
               { icon: 'MapPin', title: 'Адрес', lines: ['пгт Дагомыс, Сочи', 'ул. Гайдара, 20А/1'] },
               { icon: 'Clock', title: 'Часы работы', lines: ['Ежедневно', '10:00 — 22:00'] },
-              { icon: 'Phone', title: 'Телефон', lines: ['+7 (___) ___-__-__', 'Уточняется'] },
+              { icon: 'Phone', title: 'Телефон', lines: ['+7 (918) 668-99-27', 'Звоните с 10:00'] },
             ].map((c) => (
               <div key={c.title} className="text-center p-8 border border-gold/15 rounded-sm hover:border-gold/40 transition-colors bg-card/30">
                 <Icon name={c.icon} className="text-gold mx-auto mb-5" size={28} />
@@ -230,10 +296,13 @@ const Index = () => {
             <Icon name="Crown" className="text-gold" size={22} />
             <span className="font-display text-xl">King <span className="text-gold">Food</span></span>
           </div>
-          <p className="text-foreground/40 text-sm">© 2026 King Food · Дагомыс, Сочи</p>
+          <div className="text-center">
+            <a href="tel:+79186689927" className="text-gold hover:text-gold-light transition-colors block mb-1">+7 (918) 668-99-27</a>
+            <p className="text-foreground/40 text-sm">© 2026 King Food · Дагомыс, Сочи</p>
+          </div>
           <div className="flex gap-4">
-            {['Instagram', 'Send', 'Phone'].map((s) => (
-              <button key={s} className="w-10 h-10 flex items-center justify-center rounded-full border border-gold/25 text-gold hover:bg-gold/10 transition-colors">
+            {['Instagram', 'Send', 'MapPin'].map((s) => (
+              <button key={s} className="w-10 h-10 flex items-center justify-center rounded-full border border-gold/25 text-gold hover:bg-gold/10 hover:border-gold/50 transition-colors">
                 <Icon name={s} size={18} />
               </button>
             ))}
